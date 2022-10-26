@@ -87,16 +87,36 @@ export class GameManager extends Component {
             this._currentShootTime = 0;
         }
 
-        if(this._combinationIntertal == Constant.Combination.PLAN1){
-            this._currentCreateEnemyTime +=deltaTime;
-            if(this._currentCreateEnemyTime>this.createEnemyTime){
+        this._currentCreateEnemyTime +=deltaTime;
+        if(this._combinationIntertal === Constant.Combination.PLAN1){
+            // console.log(this._currentCreateEnemyTime, this.createEnemyTime);
+            if(this._currentCreateEnemyTime > this.createEnemyTime){
+                // console.log("BBB");
                 this.createEnemyPlane();
                 this._currentCreateEnemyTime = 0;
             }
-        }else if(this._combinationIntertal == Constant.Combination.PLAN2){
-
+        }else if(this._combinationIntertal === Constant.Combination.PLAN2){
+            if(this._currentCreateEnemyTime > this.createEnemyTime * 0.9){
+                const randomCombination = math.randomRangeInt(1,3);
+                if(randomCombination === Constant.Combination.PLAN2){
+                    this.createCombination1();
+                }else{
+                    this.createEnemyPlane();
+                }
+                this._currentCreateEnemyTime = 0;
+            }
         }else{
-
+            if(this._currentCreateEnemyTime > this.createEnemyTime * 0.8){
+                const randomCombination = math.randomRangeInt(1,4);
+                if(randomCombination === Constant.Combination.PLAN2){
+                    this.createCombination1();
+                }else if(randomCombination === Constant.Combination.PLAN3){
+                    this.createCombination2();
+                }else{
+                    this.createEnemyPlane();
+                }
+                this._currentCreateEnemyTime = 0;
+            }
         }
     }
 
@@ -118,6 +138,39 @@ export class GameManager extends Component {
 
         const randomPos = math.randomRangeInt(-25,26);
         enemy.setPosition(randomPos, 0, -50);
+    }
+
+    public createCombination1(){
+        const enemyArray = new Array<Node>(5);
+        for (let index = 0; index < enemyArray.length; index++) {
+            enemyArray[index] = instantiate(this.enemy01);
+            const element = enemyArray[index];
+            element.setParent(this.node);
+            element.setPosition(-20 + index*10, 0, -50);
+            const enemyComp = element.getComponent(EnemyPlane);
+            enemyComp.show(this.enemy1Speed);
+        }
+    }
+
+    public createCombination2(){
+        const enemyArray = new Array<Node>(7);
+        const combinationPos = [
+            -21, 0, -60, 
+            -14, 0, -55,
+            -7, 0, -50,
+            0, 0, -45,
+            7, 0, -50,
+            14, 0, -55,
+            21, 0, -60, 
+        ];
+        for (let index = 0; index < enemyArray.length; index++) {
+            enemyArray[index] = instantiate(this.enemy02);
+            const element = enemyArray[index];
+            element.setParent(this.node);
+            element.setPosition(combinationPos[3*index], combinationPos[3*index+1], combinationPos[3*index+2]);
+            const enemyComp = element.getComponent(EnemyPlane);
+            enemyComp.show(this.enemy2Speed);
+        }
     }
 
     public isShooting(value:boolean){
