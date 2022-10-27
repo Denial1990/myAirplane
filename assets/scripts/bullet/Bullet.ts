@@ -1,5 +1,5 @@
 
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, Component, Node, sp } from 'cc';
 const { ccclass, property } = _decorator;
 
 /**
@@ -14,7 +14,6 @@ const { ccclass, property } = _decorator;
  *
  */
  
-const OUTOFRANGE = 50
 
 @ccclass('Bullet')
 export class Bullet extends Component {
@@ -22,22 +21,44 @@ export class Bullet extends Component {
     // dummy = '';
 
     // [2]
-    @property
-    public bulletSpeed = 0;
-
+    
+    private _bulletSpeed:number = 0;
+    private _isEnemyBullet:boolean = false;
     // start () {
     //     // [3]
     // }
 
     update (deltaTime: number) {
         const pos = this.node.position;
-        const moveLength = pos.z - this.bulletSpeed;
-        this.node.setPosition(pos.x, pos.y, moveLength);
-
-        if(moveLength > OUTOFRANGE){
-            this.node.destroy();
-            console.log("bullet is out of window");
+        let moveLength = 0;
+        let outOfRange = -50;
+        if(this._isEnemyBullet){
+            moveLength = pos.z + this._bulletSpeed;
+            outOfRange = 50;
+        }else{
+            moveLength = pos.z - this._bulletSpeed;   
         }
+         
+        this.node.setPosition(pos.x, pos.y, moveLength);
+        
+        //0
+
+        if(this._isEnemyBullet){
+            if(moveLength > outOfRange){
+                this.node.destroy();
+                console.log("bullet is out of window");
+            }
+        }else{
+            if(moveLength < outOfRange){
+                this.node.destroy();
+                console.log("bullet is out of window");
+            }
+        }
+    }
+
+    setBulletSpeed(speed:number, isEnemyBullet:boolean){
+        this._bulletSpeed = speed;
+        this._isEnemyBullet = isEnemyBullet;
     }
 }
 

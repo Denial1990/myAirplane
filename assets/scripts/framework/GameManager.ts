@@ -1,5 +1,5 @@
 
-import { _decorator, Component, Node, Material, Prefab, instantiate, math } from 'cc';
+import { _decorator, Component, Node, Material, Prefab, instantiate, math, Vec3 } from 'cc';
 import { Bullet } from '../bullet/Bullet';
 import { EnemyPlane } from '../plane/EnemyPlane';
 import { Constant } from './Constant';
@@ -62,6 +62,8 @@ export class GameManager extends Component {
     @property(Prefab)
     public enemy02:Prefab = null;
 
+
+
     private _currentShootTime = 0;
     private _isShooting:boolean = false;
     private _currentCreateEnemyTime = 0;
@@ -73,7 +75,17 @@ export class GameManager extends Component {
         const pos = this.playerPlane.position;
         bullet.setPosition(pos.x, pos.y, pos.z-7);
         const bulletComp = bullet.getComponent(Bullet);    //Bullet.ts
-        bulletComp.bulletSpeed = this.bulletSpeed;
+        bulletComp.setBulletSpeed(this.bulletSpeed, false);
+    }
+
+    public createEnemyBullet(targetPosition:Vec3){
+        const bullet = instantiate(this.bullet01);
+        bullet.setParent(this.bulletRoot);
+        bullet.setPosition(targetPosition.x, targetPosition.y, targetPosition.z+6);
+        console.log("enemy plane position:", targetPosition.x, " ",  targetPosition.y, " ",  targetPosition.z);
+        console.log("enemy plane bullet position:", bullet.position.x, " ",  bullet.position.y, " ",  bullet.position.z);
+        const bulletComp = bullet.getComponent(Bullet);    //Bullet.ts
+        bulletComp.setBulletSpeed(1, true);
     }
 
     start () {
@@ -134,7 +146,7 @@ export class GameManager extends Component {
         const enemy = instantiate(prefab);
         enemy.setParent(this.node);
         const enemyComp = enemy.getComponent(EnemyPlane);
-        enemyComp.show(speed);
+        enemyComp.show(this, speed, true);
 
         const randomPos = math.randomRangeInt(-25,26);
         enemy.setPosition(randomPos, 0, -50);
@@ -148,7 +160,7 @@ export class GameManager extends Component {
             element.setParent(this.node);
             element.setPosition(-20 + index*10, 0, -50);
             const enemyComp = element.getComponent(EnemyPlane);
-            enemyComp.show(this.enemy1Speed);
+            enemyComp.show(this, this.enemy1Speed, false);
         }
     }
 
@@ -169,7 +181,7 @@ export class GameManager extends Component {
             element.setParent(this.node);
             element.setPosition(combinationPos[3*index], combinationPos[3*index+1], combinationPos[3*index+2]);
             const enemyComp = element.getComponent(EnemyPlane);
-            enemyComp.show(this.enemy2Speed);
+            enemyComp.show(this, this.enemy2Speed, false);
         }
     }
 

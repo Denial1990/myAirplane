@@ -1,6 +1,7 @@
 
 import { _decorator, Component, Node, sp } from 'cc';
 import { Constant } from '../framework/Constant';
+import { GameManager } from '../framework/GameManager';
 const { ccclass, property } = _decorator;
 
 /**
@@ -22,7 +23,12 @@ export class EnemyPlane extends Component {
     // dummy = '';
 
     // [2]
-    
+    @property
+    public createEnemyBulletTime = 0.5;
+
+    private _currentCreateEnemyBulletTime = 0;
+    private _needBullet = false;
+    private _gameManager:GameManager = null;
     private _enemySpeed = 0;
 
     // public enemyType = Constant.EnemyType.TYPE1;
@@ -33,14 +39,23 @@ export class EnemyPlane extends Component {
     update (deltaTime: number) {
         const pos = this.node.position;
         const movePos = pos.z + this._enemySpeed;
+        this.node.setPosition(pos.x, pos.y, movePos);
+        if(this._needBullet){
+            this._currentCreateEnemyBulletTime +=deltaTime;
+            if(this._currentCreateEnemyBulletTime > this.createEnemyBulletTime){
+                this._gameManager.createEnemyBullet(this.node.position);
+                this._currentCreateEnemyBulletTime = 0;
+            }
+        }
+        
         if(movePos > OUTOFBOUNCE)
-            this.node.destroy();
-        else
-            this.node.setPosition(pos.x, pos.y, movePos);   
+            this.node.destroy();       
     }
 
-    show(speed:number){
+    show(gameManager:GameManager, speed:number, needBullet:boolean){
+        this._gameManager = gameManager;
         this._enemySpeed = speed;
+        this._needBullet = needBullet;
     }
 }
 
