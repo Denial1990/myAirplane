@@ -1,5 +1,6 @@
 
-import { _decorator, Component, Node, systemEvent, SystemEvent, EventTouch,Touch } from 'cc';
+import { _decorator, Component, Node, systemEvent, SystemEvent, EventTouch,Touch, Collider, BoxCollider, ITriggerEvent  } from 'cc';
+import { Constant } from '../framework/Constant';
 const { ccclass, property } = _decorator;
 
 /**
@@ -23,9 +24,32 @@ export class SelfPlane extends Component {
     // @property
     // serializableDummy = 0;
 
-    start () {
+    // start(){
+    //     console.log("self plane start \n");
+    // }
+    onEnable() {
         // systemEvent.on(SystemEvent.EventType.TOUCH_START, this._touchStart, this);
         // systemEvent.on(SystemEvent.EventType.TOUCH_MOVE, this._touchMove, this);
+        console.log("self plane enable \n");
+        const collider = this.node.getComponent(Collider);
+        collider.on('onTriggerEnter', this._onTriggerEnter, this);
+    }
+
+    onDisable() {
+        // systemEvent.on(SystemEvent.EventType.TOUCH_START, this._touchStart, this);
+        // systemEvent.on(SystemEvent.EventType.TOUCH_MOVE, this._touchMove, this);
+        const collider = this.node.getComponent(Collider);
+        collider.off('onTriggerEnter', this._onTriggerEnter, this);
+    }
+
+
+    private _onTriggerEnter(event:ITriggerEvent){
+        console.log("enter collision \n");
+        const collisionGroup = event.otherCollider.getGroup();
+        if(collisionGroup === Constant.CollisionType.ENEMY_PLANE || collisionGroup === Constant.CollisionType.ENEMY_BULLET){
+            console.log("reduce blood");
+        }
+
     }
 
     // _touchStart(touch:Touch, event: EventTouch){

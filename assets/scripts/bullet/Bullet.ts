@@ -1,5 +1,5 @@
 
-import { _decorator, Component, Node, sp } from 'cc';
+import { _decorator, Component, Node, sp, BoxCollider, ITriggerEvent } from 'cc';
 const { ccclass, property } = _decorator;
 
 /**
@@ -28,6 +28,36 @@ export class Bullet extends Component {
     //     // [3]
     // }
 
+    onEnable () {
+        // systemEvent.on(SystemEvent.EventType.TOUCH_START, this._touchStart, this);
+        // systemEvent.on(SystemEvent.EventType.TOUCH_MOVE, this._touchMove, this);
+        const collider = this.node.getComponent(BoxCollider);
+        
+        
+        //!!!!!!!!!!!! 这里有错误，为什么有时collider为空
+        if (collider!==null) {
+            collider.on('onTriggerEnter', this._onTriggerEnter, this);
+        }
+        // collider.on('onTriggerEnter', this._onTriggerEnter, this);
+    }
+
+    onDisable () {
+        // systemEvent.on(SystemEvent.EventType.TOUCH_START, this._touchStart, this);
+        // systemEvent.on(SystemEvent.EventType.TOUCH_MOVE, this._touchMove, this);
+        const collider = this.node.getComponent(BoxCollider);
+
+
+        //!!!!!!!!!!!! 这里有错误，为什么有时collider为空
+        if (collider!==null) {
+            collider.off('onTriggerEnter', this._onTriggerEnter, this);
+        }
+
+    }
+
+    private _onTriggerEnter(event:ITriggerEvent){
+        this.node.destroy();
+    }
+
     update (deltaTime: number) {
         const pos = this.node.position;
         let moveLength = 0;
@@ -46,12 +76,12 @@ export class Bullet extends Component {
         if(this._isEnemyBullet){
             if(moveLength > outOfRange){
                 this.node.destroy();
-                console.log("bullet is out of window");
+                // console.log("bullet is out of window");
             }
         }else{
             if(moveLength < outOfRange){
                 this.node.destroy();
-                console.log("bullet is out of window");
+                // console.log("bullet is out of window");
             }
         }
     }

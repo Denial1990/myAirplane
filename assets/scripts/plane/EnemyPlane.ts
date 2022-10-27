@@ -1,5 +1,5 @@
 
-import { _decorator, Component, Node, sp } from 'cc';
+import { _decorator, Component, Node, sp , Collider, ITriggerEvent} from 'cc';
 import { Constant } from '../framework/Constant';
 import { GameManager } from '../framework/GameManager';
 const { ccclass, property } = _decorator;
@@ -31,9 +31,38 @@ export class EnemyPlane extends Component {
     private _gameManager:GameManager = null;
     private _enemySpeed = 0;
 
-    // public enemyType = Constant.EnemyType.TYPE1;
-    start () {
-        // [3]
+    onEnable () {
+        // systemEvent.on(SystemEvent.EventType.TOUCH_START, this._touchStart, this);
+        // systemEvent.on(SystemEvent.EventType.TOUCH_MOVE, this._touchMove, this);
+        const collider = this.node.getComponent(Collider);
+        // console.log(collider);
+
+
+
+        //!!!!!!!!!!!! 这里有错误，为什么有时collider为空
+        if (collider!==null) {
+            collider.on('onTriggerEnter', this._onTriggerEnter, this);
+        }
+        // console.log("over \n");
+    }
+
+    onDisable () {
+        // systemEvent.on(SystemEvent.EventType.TOUCH_START, this._touchStart, this);
+        // systemEvent.on(SystemEvent.EventType.TOUCH_MOVE, this._touchMove, this);
+        const collider = this.node.getComponent(Collider);
+        //!!!!!!!!!!!! 这里有错误，为什么有时collider为空
+        if (collider!==null) {
+            collider.off('onTriggerEnter', this._onTriggerEnter, this);
+        }
+    }
+
+    private _onTriggerEnter(event:ITriggerEvent){
+        const collisionGroup = event.otherCollider.getGroup();
+        if(collisionGroup === Constant.CollisionType.SELF_PLANE || collisionGroup === Constant.CollisionType.SELF_BULLET){
+            this.node.destroy();
+            this._gameManager.addScore();
+        }
+
     }
 
     update (deltaTime: number) {

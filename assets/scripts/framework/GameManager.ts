@@ -1,5 +1,5 @@
 
-import { _decorator, Component, Node, Material, Prefab, instantiate, math, Vec3 } from 'cc';
+import { _decorator, Component, Node, Material, Prefab, instantiate, math, Vec3, BoxCollider} from 'cc';
 import { Bullet } from '../bullet/Bullet';
 import { EnemyPlane } from '../plane/EnemyPlane';
 import { Constant } from './Constant';
@@ -82,10 +82,19 @@ export class GameManager extends Component {
         const bullet = instantiate(this.bullet01);
         bullet.setParent(this.bulletRoot);
         bullet.setPosition(targetPosition.x, targetPosition.y, targetPosition.z+6);
-        console.log("enemy plane position:", targetPosition.x, " ",  targetPosition.y, " ",  targetPosition.z);
-        console.log("enemy plane bullet position:", bullet.position.x, " ",  bullet.position.y, " ",  bullet.position.z);
         const bulletComp = bullet.getComponent(Bullet);    //Bullet.ts
         bulletComp.setBulletSpeed(1, true);
+
+        const colliderComp = bullet.getComponent(BoxCollider);    //Bullet.ts
+
+        if(colliderComp!==null){
+            colliderComp.setGroup(Constant.CollisionType.ENEMY_BULLET);
+            colliderComp.setMask(Constant.CollisionType.SELF_PLANE);
+        }
+    }
+
+    public addScore(){
+
     }
 
     start () {
