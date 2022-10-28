@@ -31,29 +31,26 @@ export class EnemyPlane extends Component {
     private _gameManager:GameManager = null;
     private _enemySpeed = 0;
 
-    onEnable () {
+    onEnable() {
         // systemEvent.on(SystemEvent.EventType.TOUCH_START, this._touchStart, this);
         // systemEvent.on(SystemEvent.EventType.TOUCH_MOVE, this._touchMove, this);
         const collider = this.node.getComponent(Collider);
         // console.log(collider);
-
-
-
         //!!!!!!!!!!!! 这里有错误，为什么有时collider为空
-        if (collider!==null) {
-            collider.on('onTriggerEnter', this._onTriggerEnter, this);
-        }
+        // if (collider!==null) {
+        collider.on('onTriggerEnter', this._onTriggerEnter, this);
+        // }
         // console.log("over \n");
     }
 
-    onDisable () {
+    onDisable() {
         // systemEvent.on(SystemEvent.EventType.TOUCH_START, this._touchStart, this);
         // systemEvent.on(SystemEvent.EventType.TOUCH_MOVE, this._touchMove, this);
         const collider = this.node.getComponent(Collider);
         //!!!!!!!!!!!! 这里有错误，为什么有时collider为空
-        if (collider!==null) {
-            collider.off('onTriggerEnter', this._onTriggerEnter, this);
-        }
+        // if (collider!==null) {
+        collider.off('onTriggerEnter', this._onTriggerEnter, this);
+        // }
     }
 
     private _onTriggerEnter(event:ITriggerEvent){
